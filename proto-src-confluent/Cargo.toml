@@ -1,0 +1,15 @@
+[package]
+name = "proto-src-confluent"
+version = "0.1.0+gc1e412b.v8.2.1"
+description = "Vendored confluent/*.proto sources — the 'known' types Confluent Schema Registry treats as ambient — for any protobuf compiler. Schema resources, not generated Rust types."
+keywords = ["protobuf", "proto", "confluent", "schema-registry", "vendored"]
+categories = ["development-tools::build-utils"]
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+testkit = { path = "../testkit" }

@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Install cargo-sort
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-sort
+      - name: Cargo.toml sorted
+        run: cargo sort --workspace --check
+      - name: Assert build.rs copies are identical
+        run: diff proto-src-google-type/build.rs proto-src-confluent/build.rs
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --workspace
+
+  vendor-sync:
+    # Re-vendor from the pinned commits in vendor.toml and fail if anything
+    # differs from what's committed, so the vendored files and the stamped crate
+    # versions can't drift from the pins.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-run sync
+        run: ./scripts/sync.py
+      - name: Assert no drift
+        run: git diff --exit-code
+
+  verify-version:
+    # Download the Maven artifact named by each `version` and assert its protos
+    # are byte-identical to the vendored ones, so `version` can't drift from `rev`.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify version labels
+        run: ./scripts/verify_version.py

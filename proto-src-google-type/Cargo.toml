@@ -1,0 +1,15 @@
+[package]
+name = "proto-src-google-type"
+version = "0.1.0+g208f198.v2.71.0"
+description = "Vendored google/type/*.proto sources for any protobuf compiler. Schema resources, not generated Rust types."
+keywords = ["protobuf", "proto", "googleapis", "schema-registry", "vendored"]
+categories = ["development-tools::build-utils"]
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+testkit = { path = "../testkit" }

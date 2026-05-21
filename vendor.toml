@@ -1,0 +1,42 @@
+# Vendoring manifest — the single machine-readable source of truth for upstream
+# provenance. Each `[[source]]` records where a set of `.proto` files comes from
+# and which exact commit it is pinned to. All `*.proto` under `src` are vendored
+# (mirrored under `dest`); there is no per-file list. `rev` is the canonical
+# identity of the content; `version` names a published Maven `artifact` release
+# whose `.proto` files are byte-identical to `rev` (several releases can map to
+# one `rev`). `version` stamps the crate version and is checked against the
+# artifact by scripts/verify_version.py.
+#
+# To update a bundle:
+#   1. bump `rev` (and `version`) to the new upstream commit/release
+#   2. run `scripts/sync.py`  (re-vendors and stamps the crate version)
+#   3. run `scripts/verify_version.py`  (checks `version` matches the artifact)
+#   4. review `git diff`, then commit the refreshed files together with this file
+
+[[source]]
+name = "google-type"
+git = "https://github.com/googleapis/googleapis"
+rev = "208f19890d8e0a4a5bc772584246c973ff57f6c1"
+version = "2.71.0"
+artifact = "com.google.api.grpc:proto-google-common-protos"
+license = "Apache-2.0"
+src = "google/type"
+dest = "proto-src-google-type/proto/google/type"
+# This commit's google/type tree is byte-identical to proto-google-common-protos
+# 2.71.0 (the latest published version). Confluent itself uses 2.53.0, which
+# differs only in copyright year, the cc_enable_arenas option, and doc wording —
+# no essential/schema difference — so we track the latest.
+
+[[source]]
+name = "confluent"
+git = "https://github.com/confluentinc/schema-registry"
+rev = "c1e412b525383b018f0b95a50ea698de2502a94f"
+version = "8.2.1"
+artifact = "io.confluent:kafka-protobuf-types"
+maven_repo = "https://packages.confluent.io/maven"
+license = "Apache-2.0"
+src = "protobuf-types/src/main/proto/confluent"
+dest = "proto-src-confluent/proto/confluent"
+# This commit's confluent tree is byte-identical to the latest released
+# kafka-protobuf-types, 8.2.1. (variant.proto is only on unreleased main, so it
+# is naturally absent at this pinned release commit.)
